@@ -1,0 +1,12 @@
+{
+  "name": "twf-picoserver",
+  "description": "Twinfield PicoWebServer application",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "colors": "^1.0.3",
+    "compression": "^1.0.11",
+    "express": "~4.2.0",
+    "request": "^2.40.0"
+  }
+}
