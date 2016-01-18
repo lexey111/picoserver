@@ -8,5 +8,5 @@ module.exports = {
 	resources: '../../Sources/TwinfieldUI/Output', // site root
 	neo_addr: 'http://localhost:8180', // where is Twinfield API
 	default_culture: 'en-GB',
-	local_server_ip: '10.20.20.73'
+	local_server_ip: '10.20.20.72'
 };
