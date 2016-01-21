@@ -24,7 +24,7 @@ function proxy(pattern) {
 		}
 
 		stat.api++;
-		if (config.verbose && ! config.quiet) {
+		if (config.verbose && !config.quiet) {
 			console.log('\tForward request %s, method [%s] to ' + config.neo_addr + '%s', req.url, req.method, req.url.yellow);
 		}
 
@@ -47,7 +47,9 @@ function proxy(pattern) {
 			var s = body ? body.toString() : '';
 
 			s = replaceAll(config.neo_addr, config.mixed_proxy_addr, s); // API url's are hardcoded in the links, so replace them
-			//s = replaceAll('http://localhost:3000/api', 'http://10.20.20.72:3000/api', s); // API url's are hardcoded in the links, so replace them
+			if (config.start_for_remote_access) {
+				s = replaceAll('http://localhost:3000/api', 'http://' + config.local_server_ip + ':3000/api', s); // API url's are hardcoded in the links, so replace them
+			}
 			if (error) {
 				console.log(error);
 				next();

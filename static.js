@@ -70,7 +70,7 @@ var middleHandler = function(req, res, next) {
 	s = replaceAll(config.local_server_ip, 'localhost', s); // change the default address for external _links
 
 	req.url = s;
-	if (req.url.indexOf('tour') !== -1){
+	if (req.url.indexOf('tour') !== -1) {
 		//console.log('\nTour is substituted\n');
 		return res.status(200).send();
 	}
@@ -131,8 +131,8 @@ stdin.on('data', function(key) {
 		return;
 	}
 	if (key === 'c' || key === 'C') {
-	 	process.stdout.write('\u001B[2J\u001B[0;0f');
-	 	printHeader();
+		process.stdout.write('\u001B[2J\u001B[0;0f');
+		printHeader();
 		printKeyHelp();
 
 		return;
@@ -195,6 +195,10 @@ http.get(local_api_addr, function(res) {
 
 function printKeyHelp() {
 	console.log('');
+	if (config.start_for_remote_access) {
+		console.log('[ ' + 'REMOTE ACCESS MODE'.bold.red + ' ]',
+			'Use http://' + config.local_server_ip.bold.green + ':'.green + (process.env.PORT || config.port).toString().bold.green + '/UI/#/ url to access');
+	}
 	console.log('Keys:'.gray.bold);
 	console.log('  [Ctrl+C]'.cyan + ' or ' + '[ESC]'.cyan + ' to exit');
 	console.log('  [S]'.cyan + ' to show current stat');
@@ -204,9 +208,9 @@ function printKeyHelp() {
 	console.log('  [C]'.cyan + ' to clear console');
 }
 
-function printHeader(){
+function printHeader() {
 	console.log('+------------------------------+'.gray)
-	console.log('|  '.gray + 'PicoServer for TwinfieldUI'.green.bold + '  |'.gray);
+	console.log('|  '.gray + 'picoServer for TwinfieldUI'.green.bold + '  |'.gray);
 	console.log('+------------------------------+'.gray)
 	console.log('');
 	console.log('  Server is listening on port'.gray, (process.env.PORT || config.port).toString().white);
