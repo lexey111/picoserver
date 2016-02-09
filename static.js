@@ -16,6 +16,7 @@ var auth_proxy = require('./auth_proxy.js')(counters);
 var path = require('path');
 var colors = require('colors');
 var http = require('http');
+var fs = require('fs');
 
 function replaceAll(find, replace, str) {
 	return str.replace(new RegExp(find, 'gi'), replace);
@@ -60,7 +61,7 @@ var middleHandler = function(req, res, next) {
 		}
 		process.stdout.write(t.gray);
 	}
-	s = s.replace(/UI\//gi, ''); // remove "UI"
+	s = s.replace(/^[\/\\]UI\//gi, ''); // remove "UI" from the beginning
 	s = s.replace(/en\//gi, config.default_culture + '\/'); // switch to default culture
 
 	if (/html/i.test(s)) {
@@ -69,7 +70,7 @@ var middleHandler = function(req, res, next) {
 
 	s = replaceAll(config.local_server_ip, 'localhost', s); // change the default address for external _links
 
-	req.url = s;
+	req.url = '/' + s;
 	if (req.url.indexOf('tour') !== -1) {
 		//console.log('\nTour is substituted\n');
 		return res.status(200).send();
@@ -78,7 +79,15 @@ var middleHandler = function(req, res, next) {
 	if (!config.quiet && config.verbose) {
 		console.log('\t                ' + req.url.grey);
 	}
-
+	/*
+	var p = path.resolve(path.join(config.resources, req.url));
+	if (!fs.existsSync(p)) {
+		console.log('File not found', p.red);
+	}
+	//var content = fs.readFileSync(p);
+	//res.send(content);
+	console.log(s);
+	*/
 	next();
 }
 
