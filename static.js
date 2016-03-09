@@ -71,10 +71,12 @@ var middleHandler = function(req, res, next) {
 	s = replaceAll(config.local_server_ip, 'localhost', s); // change the default address for external _links
 
 	req.url = '/' + s;
+	/*
 	if (req.url.indexOf('tour') !== -1) {
 		//console.log('\nTour is substituted\n');
 		return res.status(200).send();
 	}
+	*/
 
 	if (!config.quiet && config.verbose) {
 		console.log('\t                ' + req.url.grey);
