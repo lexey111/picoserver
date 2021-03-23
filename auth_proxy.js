@@ -2,7 +2,10 @@
 
 var config = require('./config');
 var request = require('request');
+var path = require('path');
 var auth_cookie = require('fs').readFileSync('./auth_cookie.dat', "utf8");
+console.log('  Used auth cookie', path.resolve('./auth_cookie.dat'));
+
 var colors = require('colors');
 
 var stat;
@@ -95,8 +98,7 @@ function printAuthError() {
 	console.log('    6. Open the request headers tab.');
 	console.log('    7. Copy all the content of Cookie starting from "' + 'UserToken=...'.yellow + '" to clipboard.');
 	console.log('    8. Open file ' + 'auth_cookie.dat'.yellow + ' in the current folder anf replace its content by clipboard. Save it.');
-	console.log('    9. Start ' + 'Run.bat'.green.bold + ' again.');
-	console.log('    10. Now you can to remove ' + 'UI'.yellow + ' folder/app in IIS configuration for Twinfield');
+	console.log('    9. Start ' + 'pServer*.bat'.green.bold + ' again.');
 	console.log('');
 }
 
