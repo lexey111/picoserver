@@ -7,6 +7,7 @@ const counters = {
 	api: 0,
 	api_size: 0
 };
+
 const colors = require('colors');
 
 const config = require('./config');
@@ -15,6 +16,7 @@ const fs = require('fs');
 if (!fs.existsSync(config.resources)) {
 	throw new Error('No Twinfield UI output folder is accessible!');
 }
+
 const express = require('express');
 const app = express();
 const compression = require('compression');
@@ -70,7 +72,9 @@ const middleHandler = function (req, res, next) {
 		}
 		process.stdout.write(t.gray);
 	}
+
 	s = s.replace(/^[\/\\]UI\//gi, ''); // remove "UI" from the beginning
+
 	s = s.replace(/en\//gi, config.default_culture + '\/'); // switch to default culture
 
 	if (/html/i.test(s)) {
@@ -84,6 +88,7 @@ const middleHandler = function (req, res, next) {
 	if (!config.quiet && config.verbose) {
 		console.log('\t                ' + req.url.grey);
 	}
+
 	/*
 	var p = path.resolve(path.join(config.resources, req.url));
 	if (!fs.existsSync(p)) {
@@ -93,31 +98,35 @@ const middleHandler = function (req, res, next) {
 	//res.send(content);
 	console.log(s);
 	*/
+
 	next();
 }
 
 app.use(auth_proxy(/\/api\/(.*)/i));
 app.use(compression());
 app.use(middleHandler);
+
 app.use(express.static(path.resolve(config.resources)));
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function (req, res) {
 	console.log('');
 	console.log('Error 404'.red.bold, req.url.red);
 	return res.status(404).send('File not found')
 });
 
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
 	console.log('');
 	console.log('Error 500'.red.bold);
 	console.log(err);
+
 	return res.status(500).send('Internal error')
 });
 
 printHeader();
 
-var stdin = process.stdin;
+const stdin = process.stdin;
+
 stdin.setRawMode(true);
 stdin.setEncoding('utf8');
 
@@ -128,12 +137,14 @@ stdin.on('data', function (key) {
 		console.log('Exit.');
 		process.exit();
 	}
+
 	if (key === '\u001b') {
 		// esc
 		console.log('');
 		console.log('Exit.');
 		process.exit();
 	}
+
 	if (key === 's' || key === 'S') {
 		console.log('');
 		console.log('Statistic:'.white.bold);
@@ -142,6 +153,7 @@ stdin.on('data', function (key) {
 
 		return;
 	}
+
 	if (key === 'c' || key === 'C') {
 		process.stdout.write('\u001B[2J\u001B[0;0f');
 		printHeader();
@@ -149,6 +161,7 @@ stdin.on('data', function (key) {
 
 		return;
 	}
+
 	if (key === 'r' || key === 'R') {
 		console.log('');
 		console.log('Reset stat'.yellow.bold);
@@ -156,6 +169,7 @@ stdin.on('data', function (key) {
 		counters.api = 0;
 		return;
 	}
+
 	if (key === 'l' || key === 'L') {
 		console.log('');
 		console.log('Swicth log'.yellow.bold);
@@ -168,6 +182,7 @@ stdin.on('data', function (key) {
 		}
 		return;
 	}
+
 	if (key === 'v' || key === 'V') {
 		console.log('');
 		console.log('Change log level'.yellow.bold);
@@ -183,14 +198,16 @@ stdin.on('data', function (key) {
 		}
 		return;
 	}
+
 	printKeyHelp();
 });
 
-app.listen(process.env.PORT || config.port);
+app.listen(config.port);
 
-var local_api_addr = config.mixed_proxy_addr + '/api/';
+const local_api_addr = config.mixed_proxy_addr + '/api/';
 
 console.log('  Send proxy request to API: '.yellow, local_api_addr.yellow.bold + '...');
+
 http.get(local_api_addr, function (res) {
 	if (res.statusCode !== 200) {
 		console.log('Exit with status code -' + res.statusCode.toString().red.bold);
@@ -207,10 +224,12 @@ http.get(local_api_addr, function (res) {
 
 function printKeyHelp() {
 	console.log('');
+
 	if (config.start_for_remote_access) {
-		console.log('[ ' + 'REMOTE ACCESS MODE'.bold.red + ' ]',
+		console.log('[ ' + 'REMOTE ACCESS MODE'.bold.bgYellow.black + ' ]',
 			'Use http://' + config.local_server_ip.bold.green + ':'.green + (process.env.PORT || config.port).toString().bold.green + '/UI/#/ url to access');
 	}
+
 	console.log('Keys:'.gray.bold);
 	console.log('  [Ctrl+C]'.cyan + ' or ' + '[ESC]'.cyan + ' to exit');
 	console.log('  [S]'.cyan + ' to show current stat');

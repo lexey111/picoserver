@@ -1,13 +1,13 @@
 {
-  "name": "twf-picoserver",
-  "description": "Twinfield picoWebServer application",
-  "version": "0.0.3",
-  "private": true,
-  "dependencies": {
-    "colors": "^1.4.0",
-    "compression": "^1.7.4",
-    "express": "^4.17.1",
-    "request": "^2.88.2",
-    "yargs": "^16.2.0"
-  }
+	"name": "twf-picoserver",
+	"description": "Twinfield picoWebServer application",
+	"version": "0.0.3",
+	"private": true,
+	"dependencies": {
+		"colors": "^1.4.0",
+		"compression": "^1.7.4",
+		"express": "^4.17.1",
+		"request": "^2.88.2",
+		"yargs": "^16.2.0"
+	}
 }

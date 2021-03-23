@@ -74,20 +74,20 @@ function proxy(pattern) {
 			res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 			res.header('Content-Type', 'application/vnd.twinfield+json');
 
-			if (response.statusCode == 401) {
+			if (response.statusCode === 401) {
 				printAuthError();
-				return res.send(response.statusCode, s);
+				return res.status(response.statusCode).send(s);
 			}
 
 			if (s) {
-				res.send(response.statusCode, s);
+				res.status(response.statusCode).send(s);
 			} else {
 				console.log('Empty response'.red.bold);
 				return res.status(204).send();
 			}
 		}));
 	};
-};
+}
 
 function printAuthError() {
 	console.log('  +-----------------------+'.red);
