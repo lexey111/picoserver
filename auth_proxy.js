@@ -1,14 +1,20 @@
 'use strict';
+const colors = require('colors');
 
-var config = require('./config');
-var request = require('request');
-var path = require('path');
-var auth_cookie = require('fs').readFileSync('./auth_cookie.dat', "utf8");
+const fs = require('fs');
+
+if (!fs.existsSync('./auth_cookie.dat')) {
+	printAuthError();
+	throw new Error('./auth_cookie.dat not found!')
+}
+
+const config = require('./config');
+const request = require('request');
+const path = require('path');
+const auth_cookie = require('fs').readFileSync('./auth_cookie.dat', 'utf8');
 console.log('  Used auth cookie', path.resolve('./auth_cookie.dat'));
 
-var colors = require('colors');
-
-var stat;
+let stat;
 
 /**
  * Wrapper for s = s.replace(/<1>/gi, '<2>');
@@ -21,7 +27,7 @@ function replaceAll(find, replace, str) {
  * Main routine
  */
 function proxy(pattern) {
-	return function(req, res, next) {
+	return function (req, res, next) {
 		if (!req.url.match(pattern)) {
 			return next();
 		}
@@ -39,14 +45,14 @@ function proxy(pattern) {
 			headers: {
 				'Accept': 'application/vnd.twinfield+json;version=latest',
 				'Access-Control-Allow-Origin': '*',
-				"Access-Control-Allow-Headers": 'X-Requested-With, ETag, Accept, Origin, Referer, User-Agent, Content-Type, Authorization',
-				'Access-Control-Allow-Methods': "PUT, GET, POST, DELETE, OPTIONS",
+				'Access-Control-Allow-Headers': 'X-Requested-With, ETag, Accept, Origin, Referer, User-Agent, Content-Type, Authorization',
+				'Access-Control-Allow-Methods': 'PUT, GET, POST, DELETE, OPTIONS',
 				'Cookie': auth_cookie
 			}
 
 		}
 
-		req.pipe(request(options, function(error, response, body) {
+		req.pipe(request(options, function (error, response, body) {
 			var s = body ? body.toString() : '';
 
 			s = replaceAll(config.neo_addr, config.mixed_proxy_addr, s); // API url's are hardcoded in the links, so replace them
@@ -64,8 +70,8 @@ function proxy(pattern) {
 
 			res.header('Access-Control-Allow-Origin', allowed_host);
 			res.header('Access-Control-Allow-Credentials', 'true');
-			res.header("Access-Control-Allow-Headers", "X-Requested-With, ETag, Accept, Origin, Referer, User-Agent, Content-Type, Authorization");
-			res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
+			res.header('Access-Control-Allow-Headers', 'X-Requested-With, ETag, Accept, Origin, Referer, User-Agent, Content-Type, Authorization');
+			res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
 			res.header('Content-Type', 'application/vnd.twinfield+json');
 
 			if (response.statusCode == 401) {
@@ -102,7 +108,7 @@ function printAuthError() {
 	console.log('');
 }
 
-module.exports = function(stat_object) {
+module.exports = function (stat_object) {
 	stat = stat_object;
 	return proxy;
 };

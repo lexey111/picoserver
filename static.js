@@ -1,22 +1,26 @@
 'use strict';
 
 // Statistic
-var counters = {
+const counters = {
 	total: 0,
 	total_size: 0,
 	api: 0,
 	api_size: 0
 };
+const colors = require('colors');
 
-var config = require('./config');
-var express = require('express');
-var app = express();
-var compression = require('compression');
-var auth_proxy = require('./auth_proxy.js')(counters);
-var path = require('path');
-var colors = require('colors');
-var http = require('http');
-var fs = require('fs');
+const config = require('./config');
+const fs = require('fs');
+
+if (!fs.existsSync(config.resources)) {
+	throw new Error('No Twinfield UI output folder is accessible!');
+}
+const express = require('express');
+const app = express();
+const compression = require('compression');
+const auth_proxy = require('./auth_proxy.js')(counters);
+const path = require('path');
+const http = require('http');
 
 function replaceAll(find, replace, str) {
 	return str.replace(new RegExp(find, 'gi'), replace);
@@ -25,7 +29,7 @@ function replaceAll(find, replace, str) {
 /**
  * Main middleware
  */
-var middleHandler = function(req, res, next) {
+const middleHandler = function (req, res, next) {
 	counters.total++;
 
 	if (!config.quiet) {
@@ -37,11 +41,16 @@ var middleHandler = function(req, res, next) {
 		process.stdout.write('Processed requests:'.magenta.bold + ' [' + counters.total + '] API: [' + counters.api + ']...');
 	}
 
-	var s, file, t = '.';
+	let s;
+	let file;
+	let t = '.';
+
 	s = req.url;
-	if (s == '/UI/') {
+
+	if (s === '/UI/') {
 		s = '/index.html';
 	}
+
 	if (config.quiet) {
 		file = (s || '').toLowerCase();
 		if (file.indexOf('html') !== -1) {
@@ -71,12 +80,6 @@ var middleHandler = function(req, res, next) {
 	s = replaceAll(config.local_server_ip, 'localhost', s); // change the default address for external _links
 
 	req.url = '/' + s;
-	/*
-	if (req.url.indexOf('tour') !== -1) {
-		//console.log('\nTour is substituted\n');
-		return res.status(200).send();
-	}
-	*/
 
 	if (!config.quiet && config.verbose) {
 		console.log('\t                ' + req.url.grey);
@@ -99,19 +102,17 @@ app.use(middleHandler);
 app.use(express.static(path.resolve(config.resources)));
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
 	console.log('');
 	console.log('Error 404'.red.bold, req.url.red);
-	res.status(404);
-	return res.send('File not found');
+	return res.status(404).send('File not found')
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
 	console.log('');
 	console.log('Error 500'.red.bold);
 	console.log(err);
-	res.status(err.status || 500);
-	return res.send('Internal error');
+	return res.status(500).send('Internal error')
 });
 
 printHeader();
@@ -120,7 +121,7 @@ var stdin = process.stdin;
 stdin.setRawMode(true);
 stdin.setEncoding('utf8');
 
-stdin.on('data', function(key) {
+stdin.on('data', function (key) {
 	if (key === '\u0003') {
 		// ctrl-c
 		console.log('');
@@ -190,7 +191,7 @@ app.listen(process.env.PORT || config.port);
 var local_api_addr = config.mixed_proxy_addr + '/api/';
 
 console.log('  Send proxy request to API: '.yellow, local_api_addr.yellow.bold + '...');
-http.get(local_api_addr, function(res) {
+http.get(local_api_addr, function (res) {
 	if (res.statusCode !== 200) {
 		console.log('Exit with status code -' + res.statusCode.toString().red.bold);
 		process.exit(0 - res.statusCode);
@@ -199,8 +200,8 @@ http.get(local_api_addr, function(res) {
 		console.log('[ ' + 'READY'.cyan.bold + ' ]');
 		printKeyHelp();
 	}
-}).on('error', function(e) {
-	console.log("Got error: " + e.message);
+}).on('error', function (e) {
+	console.log('Got error: ' + e.message);
 	process.exit(-2);
 });
 
